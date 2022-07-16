@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/drawable-xhdpi/ripple.xml" value="0.13914473684210527" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/drawable/comment_background.xml" value="0.2015" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/drawable/corner_background.xml" value="0.13914473684210527" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/drawable/ic_baseline_bookmark_border_24.xml" value="0.13914473684210527" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/drawable/ic_baseline_comment_24.xml" value="0.13914473684210527" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/drawable/ripple.xml" value="0.13914473684210527" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/drawable/search_background.xml" value="0.13914473684210527" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/drawable/splash_image.xml" value="0.13778501628664494" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/activity_edit_profile.xml" value="0.12894736842105264" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/activity_favorite.xml" value="0.2" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/activity_read_epi.xml" value="0.22" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/activity_report_bug.xml" value="0.18" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/activity_search.xml" value="0.2" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/activity_view_album.xml" value="0.15" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/activity_view_category.xml" value="0.15" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/albem_item.xml" value="0.25" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/authenticating_dialog.xml" value="0.12894736842105264" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/category_album_item.xml" value="0.17" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/category_icon.xml" value="0.18" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/category_item.xml" value="0.1" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/comment_dialog.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/comment_item.xml" value="0.18" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/comment_long_dialog.xml" value="0.18" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/comments_dialog.xml" value="0.13" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/edit_comment_dialog.xml" value="0.18" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/epi_item.xml" value="0.22" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/fragment_category.xml" value="0.1" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/fragment_home.xml" value="0.15" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/fragment_settings.xml" value="0.21" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/loading_layout.xml" value="0.2" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/profile_long_click.xml" value="0.2" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/settings_dialog.xml" value="0.25" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/layout/slider_item.xml" value="0.18" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/ClientDemo/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.13914473684210527" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/drawable-night/ripple_album.xml" value="0.1905" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/drawable/ripple.xml" value="0.1905" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/drawable/ripple_album.xml" value="0.1905" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/drawable/splash_image.xml" value="0.1915" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/activity_buy_premium.xml" value="0.16" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/activity_read_epi.xml" value="0.12631578947368421" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/activity_search.xml" value="0.2" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/activity_view_album.xml" value="0.12894736842105264" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/albem_item.xml" value="0.22" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/authenticating_dialog.xml" value="0.12894736842105264" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/fragment_home.xml" value="0.25" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/fragment_settings.xml" value="0.17" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/item_main.xml" value="0.25" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/preview_dialog.xml" value="0.17" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

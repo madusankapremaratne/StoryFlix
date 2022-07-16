@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    android:layout_marginTop="70dp"
+    android:layout_marginBottom="70dp"
+    android:layout_gravity="center"
+    app:cardBackgroundColor="@color/contentBackgroundColor"
+    app:cardCornerRadius="20dp"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_above="@id/bottomLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Comments"
+                android:textStyle="bold"
+                android:textColor="@color/mainTextColor"
+                android:alpha="0.9"
+                android:layout_marginStart="25dp"
+                android:textSize="23sp"/>
+
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:id="@+id/swipeView"
+                android:layout_height="match_parent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:paddingTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/recyclerView"
+                    android:overScrollMode="never"/>
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="60dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/bottomLayout">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/dividerColor"/>
+
+            <EditText
+                android:maxLines="6"
+                android:id="@+id/commentED"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:hint="Write a comment..."
+                android:minHeight="60dp"
+                android:paddingStart="18dp"
+                android:textColor="@color/mainTextColor"
+                android:textColorHint="@color/hintTextColor"
+                android:textSize="15sp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="40dp"
+                app:elevation="0dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                app:backgroundTint="@color/color_primary"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/publishComment"
+                android:layout_marginEnd="15dp"
+                android:src="@drawable/ic_baseline_publish_24"
+                app:fabCustomSize="40dp"
+                app:tint="@color/white"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

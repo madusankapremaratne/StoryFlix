@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/mainBackgroundColor"
+    tools:context=".ViewAlbumActivity">
+
+    <RelativeLayout
+        android:id="@+id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/contentBackgroundColor">
+
+        <RelativeLayout
+            android:id="@+id/backBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="5dp">
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerInParent="true"
+                android:alpha="0.9"
+                android:src="@drawable/ic_baseline_arrow_back_24"
+                app:tint="@color/mainTextColor" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/albumName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="-2dp"
+            android:layout_marginBottom="14dp"
+            android:layout_toStartOf="@id/favoriteBtn"
+            android:layout_toEndOf="@id/backBtn"
+            android:text="The King Of Drugs"
+            android:textColor="@color/mainTextColor"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_marginEnd="5dp"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/favoriteBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp">
+
+            <ImageView
+                android:id="@+id/favImage"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerInParent="true"
+                android:alpha="0.7"
+                android:src="@drawable/ic_baseline_favorite_border_24"
+                app:tint="@color/mainTextColor" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/dividerColor" />
+
+    </RelativeLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_below="@id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:background="@color/mainBackgroundColor"
+            app:elevation="0dp"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:id="@+id/toolbar"
+                android:background="@color/mainBackgroundColor"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/contentBackgroundColor">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:id="@+id/imageView"
+                                android:layout_width="100dp"
+                                android:layout_height="120dp"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginTop="15dp"
+                                android:scaleType="centerCrop"
+                                app:shapeAppearanceOverlay="@style/circular" />
+
+                            <LinearLayout
+                                android:layout_marginTop="15dp"
+                                android:gravity="center_vertical"
+                                android:orientation="vertical"
+                                android:layout_marginStart="15dp"
+                                android:layout_toEndOf="@id/imageView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <TextView
+                                    android:id="@+id/tagline"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:alpha="0.8"
+                                    android:text="Tagline Goes Here"
+                                    android:textColor="@color/mainTextColor"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/author"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:alpha="0.8"
+                                    android:text="Nora Barret"
+                                    android:textColor="@color/mainTextColor"
+                                    android:textSize="13sp"
+                                    android:textStyle="normal" />
+
+                                <LinearLayout
+                                    android:layout_marginTop="10dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        android:alpha="0.7"
+                                        android:id="@+id/category"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="#Novels"
+                                        android:textColor="@color/blueColor"
+                                        android:textSize="12sp"/>
+
+                                    <TextView
+                                        android:layout_marginStart="10dp"
+                                        android:id="@+id/epiCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="#total Ep : 40"
+                                        android:textColor="@color/premiumColor"
+                                        android:alpha="0.5"
+                                        android:textSize="12sp" />
+
+                                </LinearLayout>
+
+                                <RelativeLayout
+                                    android:layout_marginTop="10dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content">
+
+                                    <ImageView
+                                        android:layout_width="15dp"
+                                        android:layout_height="25dp"
+                                        app:tint="@color/mainTextColor"
+                                        android:alpha="0.5"
+                                        android:src="@drawable/ic_baseline_visibility_24"/>
+
+                                    <TextView
+                                        android:id="@+id/viewCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerVertical="true"
+                                        android:layout_marginStart="20dp"
+                                        android:alpha="0.5"
+                                        android:text="11,235"
+                                        android:textColor="@color/mainTextColor"
+                                        android:textSize="13sp" />
+
+                                </RelativeLayout>
+
+                            </LinearLayout>
+
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:layout_marginStart="15dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <TextView
+                                android:id="@+id/previewText"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_marginBottom="10dp"
+                                android:textColor="@color/mainTextColor"
+                                android:textSize="14sp"
+                                android:alpha="0.4"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="(Description or preview text goes here)  The paragraph has no controlling idea. Imagine each paragraph as having three general layers of text. The core content is in the middle. It includes all the evidence you need to make the point. However, this evidence needs to be introduced by a topic sentence in some way or your readers don t know what to do with all the evidence you have given them. Therefore, the beginning of the paragraph"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Episodes"
+                        android:textStyle="bold"
+                        android:textColor="@color/thirdTextColor"
+                        android:alpha="0.9"
+                        android:textSize="15sp"
+                        android:layout_marginStart="25dp"
+                        android:layout_marginTop="25dp"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:paddingTop="8dp"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingBottom="85dp"
+            android:scrollbars="vertical"
+            android:nestedScrollingEnabled="true"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:id="@+id/addCommentBtn"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/ic_baseline_add_comment_24"
+        app:tint="@color/white"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_height="wrap_content"
+        app:backgroundTint="@color/color_primary"/>
+
+</RelativeLayout>

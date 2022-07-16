@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "567125425735",
+    "project_id": "storyflix-ee0fc",
+    "storage_bucket": "storyflix-ee0fc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567125425735:android:a9ed188058bc99df233b62",
+        "android_client_info": {
+          "package_name": "com.client.storyflixded"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "567125425735-ebjrva7u58c6np63k3ntp3r1ve7fevai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlt8njMAMt0ZpEXnEawUbAxYXlJhevsQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "567125425735-ebjrva7u58c6np63k3ntp3r1ve7fevai.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567125425735:android:e6141a127a2f7e68233b62",
+        "android_client_info": {
+          "package_name": "sinhala.novels.ebooks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "567125425735-ebjrva7u58c6np63k3ntp3r1ve7fevai.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlt8njMAMt0ZpEXnEawUbAxYXlJhevsQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "567125425735-ebjrva7u58c6np63k3ntp3r1ve7fevai.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
