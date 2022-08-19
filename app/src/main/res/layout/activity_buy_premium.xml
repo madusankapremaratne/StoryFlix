@@ -30,17 +30,15 @@
                 android:textSize="14sp"
                 android:alpha="0.5"/>
 
-
             <TextView
                 android:layout_marginTop="0dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:text="200.00 LKR"
-                android:textSize="28sp"
+                android:text="200.00 LKR + Tax / Month"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#FF8A30"/>
-
 
             <TextView
                 android:layout_width="wrap_content"
@@ -72,7 +70,6 @@
                 android:backgroundTint="#00CC8B"
                 android:textColor="@color/white"/>
 
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -85,13 +82,13 @@
 
             <Button
                 android:id="@+id/purchaseDialog"
-                android:text="Coming Soon"
+                android:text="Purchase"
                 android:layout_marginStart="80dp"
                 android:layout_marginEnd="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="#C1C1C1"
+                android:backgroundTint="#00CC8B"
                 android:textColor="@color/white"/>
 
             <TextView
@@ -105,35 +102,16 @@
                 android:textSize="20sp" />
 
             <Button
-                android:text="Coming Soon"
+                android:id="@+id/purchaseMobitel"
+                android:text="Purchase"
                 android:layout_marginStart="80dp"
                 android:layout_marginEnd="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="#C1C1C1"
+                android:backgroundTint="#00CC8B"
                 android:textColor="@color/white"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hutch / Airtel (SIM)"
-                android:layout_marginTop="30dp"
-                android:textColor="@color/secondTextColor"
-                android:textStyle="bold"
-                android:alpha="0.8"
-                android:textSize="20sp" />
-
-            <Button
-                android:id="@+id/purchaseHutch"
-                android:text="Coming Soon"
-                android:layout_marginStart="80dp"
-                android:layout_marginEnd="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:backgroundTint="#C1C1C1"
-                android:textColor="@color/white"/>
         </LinearLayout>
 
     </ScrollView>

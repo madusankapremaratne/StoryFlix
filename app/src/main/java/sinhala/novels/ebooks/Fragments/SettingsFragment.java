@@ -1,6 +1,9 @@
 package sinhala.novels.ebooks.Fragments;
 
+import static sinhala.novels.ebooks.MainActivity.isPremium;
 import static sinhala.novels.ebooks.MainActivity.mainActivity;
+import static sinhala.novels.ebooks.MainActivity.onTrial;
+import static sinhala.novels.ebooks.MainActivity.premiumMobile;
 import static sinhala.novels.ebooks.MainActivity.profileDataChanged;
 
 import android.annotation.SuppressLint;
@@ -35,10 +38,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cyberyakku.carrierbillingsupporter.CarrierBillingSupporter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -76,6 +81,7 @@ import sinhala.novels.ebooks.LocalDatabase.LocalFavModel;
 import sinhala.novels.ebooks.MainActivity;
 import sinhala.novels.ebooks.R;
 import sinhala.novels.ebooks.ReportBugActivity;
+import sinhala.novels.ebooks.SplashActivity;
 
 public class SettingsFragment extends Fragment {
 
@@ -158,7 +164,7 @@ public class SettingsFragment extends Fragment {
         profilePicture=(CircleImageView) view.findViewById(R.id.profilePicture);
         emailTV=(TextView) view.findViewById(R.id.email);
 
-        if (mainActivity.sharedPreferences.getBoolean("isPremium",false)){
+        if (mainActivity.sharedPreferences.getBoolean("isPremium",false)||mainActivity.sharedPreferences.getBoolean("cbPremium",false)){
             version.setText("Version : Premium");
         }else{
             version.setText("Version : Free");
@@ -175,6 +181,17 @@ public class SettingsFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     showProfileDialog();
+                }
+            });
+
+            RelativeLayout refreshDivider=view.findViewById(R.id.refreshDivider);
+            refreshDivider.setVisibility(View.VISIBLE);
+            LinearLayout refreshBtn=view.findViewById(R.id.refreshBtn);
+            refreshBtn.setVisibility(View.VISIBLE);
+            refreshBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    refreshData(mainActivity.userID);
                 }
             });
 
@@ -319,14 +336,169 @@ public class SettingsFragment extends Fragment {
                     authenticatingDialog.show();
                     Intent intent=googleSignInClient.getSignInIntent();
                     googleActivityResultLauncher.launch(intent);
-                }else {
+                }else if (!isPremium && !onTrial){
                     startActivity(new Intent(getActivity(), BuyPremiumActivity.class));
+                }else{
+                    Toast.makeText(context,"You have already subscribed to premium!",Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+        LinearLayout unsubBtn=view.findViewById(R.id.unsubscribe);
+        RelativeLayout unsubDivider=view.findViewById(R.id.unSubDiv);
+
+        LinearLayout privacyPolicy=view.findViewById(R.id.privacyPolicy);
+        privacyPolicy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://storyflixsl.blogspot.com/2022/08/storyflix-terms-and-condition.html"));
+                startActivity(browserIntent);
+            }
+        });
+
+        if (premiumMobile){
+            unsubBtn.setVisibility(View.VISIBLE);
+            unsubDivider.setVisibility(View.VISIBLE);
+
+            unsubBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Dialog dialog=new Dialog(context);
+                    dialog.setContentView(R.layout.unsub_dialog);
+                    dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.setCancelable(false);
+
+                    Button unsub=dialog.findViewById(R.id.unsub);
+                    Button cancel=dialog.findViewById(R.id.cancel);
+                    ProgressBar progressBar=dialog.findViewById(R.id.progressBar);
+
+                    unsub.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            unsub.setVisibility(View.INVISIBLE);
+                            cancel.setVisibility(View.INVISIBLE);
+                            progressBar.setVisibility(View.VISIBLE);
+                            unsubscribe(dialog);
+                        }
+                    });
+
+                    cancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    dialog.show();
+
+                }
+            });
+
+        }
+
         return view;
 
+    }
+
+    private void refreshData(String userID) {
+
+        DocumentReference documentReference=firebaseFirestore.collection("Users").document(userID);
+        documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                if (documentSnapshot!=null && documentSnapshot.exists()){
+
+                    String name=documentSnapshot.getString("Name");
+                    String imageURL=documentSnapshot.getString("ImageURL");
+                    String email=documentSnapshot.getString("Email");
+                    int premiumMethod=documentSnapshot.getDouble("PremiumMethod").intValue();
+                    boolean isPremium=documentSnapshot.getBoolean("IsPremium");
+                    String mobileNumber=documentSnapshot.getString("MobileNumber");
+                    String accKey="";
+                    if (documentSnapshot.getString("accessKey")!=null){
+                        accKey=documentSnapshot.getString("accessKey");
+                    }
+
+                    userName.setText(name);
+                    if (imageURL!=null && !imageURL.isEmpty() && !imageURL.equals(mainActivity.sharedPreferences.getString("imageURL",""))){
+                        Picasso.with(context).load(imageURL).into(profilePicture);
+                    }
+                    emailTV.setText(email);
+                    emailTV.setVisibility(View.VISIBLE);
+
+                    SharedPreferences.Editor editor=mainActivity.sharedPreferences.edit();
+                    editor.putString("userName",name);
+                    editor.putString("imageURL",imageURL);
+                    editor.putBoolean("isPremium",isPremium);
+                    editor.putString("email",email);
+                    editor.putInt("premiumMethod",premiumMethod);
+                    editor.putString("mobileNumber",mobileNumber);
+                    editor.putString("accessKey",accKey);
+                    editor.apply();
+
+                    Toast.makeText(context, "Data Refreshed!", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+    }
+
+    private void unsubscribe(Dialog dialog) {
+        CarrierBillingSupporter supporter=new CarrierBillingSupporter(mainActivity);
+        supporter.initialize("WpIP1g4SB9utHkDX73foOQNjcVyG2EMJrFsm60CLwb5iqTRhKx", "tuDLR7oszgw2qAYGIpMQ", new CarrierBillingSupporter.OnInitializeCompleteListener() {
+            @Override
+            public void onInitialized() {
+
+                if (supporter.isSubscribed()){
+                    supporter.unSubscribe(new CarrierBillingSupporter.OnUnsubscribeActionListener() {
+                        @Override
+                        public void onSuccess() {
+                            SharedPreferences sharedPreferences=context.getSharedPreferences("UserData",Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor=sharedPreferences.edit();
+                            onTrial=false;
+                            premiumMobile=false;
+                            editor.putBoolean("cbPremium",false);
+                            editor.apply();
+                            Toast.makeText(context, "Unsubscribed!", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            startActivity(new Intent(context, SplashActivity.class));
+                            mainActivity.finish();
+                        }
+
+                        @Override
+                        public void onFailed() {
+                            dialog.dismiss();
+                            Toast.makeText(context, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }else{
+                    dialog.dismiss();
+                    Toast.makeText(context,"You are not subscribe to this app via your SIM!",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onSubscriptionChange(boolean subscription) {
+            }
+
+            @Override
+            public void onSubscribed() {
+
+            }
+
+            @Override
+            public void onUnSubscribed() {
+            }
+
+            @Override
+            public void onPaymentPending() {
+                Toast.makeText(context, "Subscription Pending!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> task) {
@@ -375,6 +547,10 @@ public class SettingsFragment extends Fragment {
                                     int premiumMethod=documentSnapshot.getDouble("PremiumMethod").intValue();
                                     boolean isPremium=documentSnapshot.getBoolean("IsPremium");
                                     String mobileNumber=documentSnapshot.getString("MobileNumber");
+                                    String accKey="";
+                                    if (documentSnapshot.getString("accessKey")!=null){
+                                        accKey=documentSnapshot.getString("accessKey");
+                                    }
 
                                     userName.setText(name);
                                     if (imageURL!=null && !imageURL.isEmpty() && !imageURL.equals(mainActivity.sharedPreferences.getString("imageURL",""))){
@@ -390,6 +566,7 @@ public class SettingsFragment extends Fragment {
                                     editor.putString("email",email);
                                     editor.putInt("premiumMethod",premiumMethod);
                                     editor.putString("mobileNumber",mobileNumber);
+                                    editor.putString("accessKey",accKey);
                                     editor.apply();
 
                                     CollectionReference collectionReference=firebaseFirestore.collection("Users").document(userID).collection("Favorites");

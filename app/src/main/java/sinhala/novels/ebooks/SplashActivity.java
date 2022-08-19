@@ -23,13 +23,8 @@ public class SplashActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(SplashActivity.this,MainActivity.class));
-                finish();
-            }
-        },1500);
+        startActivity(new Intent(SplashActivity.this,MainActivity.class));
+        finish();
 
         super.onCreate(savedInstanceState);
     }

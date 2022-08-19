@@ -1,14 +1,16 @@
 package sinhala.novels.ebooks;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -21,7 +23,9 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,17 +35,14 @@ import com.android.billingclient.api.BillingClientStateListener;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesResponseListener;
-import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.cyberyakku.carrierbillingsupporter.CarrierBillingSupporter;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.List;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
     public TabLayout tabLayout;
     private Context context;
-    public static boolean isConnected,favoriteChanged=false,profileDataChanged=false,isPremium=false,onTrial=false;
+    public static boolean isConnected,favoriteChanged=false,profileDataChanged=false,isPremium=false,onTrial=false,premiumMobile=false;
     public static MainActivity mainActivity;
     public TextView noInternetLayout;
     private int themeColor;
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         isPremium=sharedPreferences.getBoolean("isPremium",false);
+        onTrial=sharedPreferences.getBoolean("cbPremium",false);
+        premiumMobile=sharedPreferences.getBoolean("cbPremium",false);
 
         checkIsPremium();
         goOn();
@@ -100,62 +103,163 @@ public class MainActivity extends AppCompatActivity {
     private void checkIsPremium() {
 
         if (FirebaseAuth.getInstance().getCurrentUser()!=null){
-            DocumentReference reference= FirebaseFirestore.getInstance().collection("Users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
-            reference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    double pm=documentSnapshot.getDouble("PremiumMethod");
-                    if (pm==1){
 
-                        BillingClient billingClient;
-                        billingClient = BillingClient.newBuilder(MainActivity.this).enablePendingPurchases().setListener((billingResult, list) -> {
-                        }).build();
+            BillingClient billingClient;
+            billingClient = BillingClient.newBuilder(MainActivity.this).enablePendingPurchases().setListener((billingResult, list) -> {
+            }).build();
 
-                        connectBC(billingClient);
+            connectBC(billingClient);
 
-                    }else if (pm==2){
-                        //Check Carrier Billing
-                        CarrierBillingSupporter supporter=new CarrierBillingSupporter(MainActivity.this);
-                        supporter.initialize("WpIP1g4SB9utHkDX73foOQNjcVyG2EMJrFsm60CLwb5iqTRhKx", "tuDLR7oszgw2qAYGIpMQ", new CarrierBillingSupporter.OnInitializeCompleteListener() {
-                            @Override
-                            public void onInitialized() {
+            //CarrierBillingSupporter
+            String accessKey=sharedPreferences.getString("accessKey","");
+            CarrierBillingSupporter supporter=new CarrierBillingSupporter(MainActivity.this);
+            if (accessKey.isEmpty()){
+                supporter.getSubscriptionAccessKey(new CarrierBillingSupporter.OnSubscriptionAccessKeyRequestListener() {
+                    @Override
+                    public void onSubscriptionKey(String key) {
+                        if (key!=null){
 
-                            }
+                            FirebaseFirestore.getInstance().collection("Users").document(userID).update("accessKey",key);
 
-                            @Override
-                            public void onSubscriptionChange(boolean subscription) {
+                            SharedPreferences.Editor editor=sharedPreferences.edit();
+                            editor.putString("accessKey",key);
+                            editor.apply();
 
-                            }
+                            supporter.initializeWithKey(accessKey, "WpIP1g4SB9utHkDX73foOQNjcVyG2EMJrFsm60CLwb5iqTRhKx", "tuDLR7oszgw2qAYGIpMQ", new CarrierBillingSupporter.OnInitializeCompleteListener() {
+                                @Override
+                                public void onInitialized() {
 
-                            @Override
-                            public void onSubscribed() {
+                                }
 
-                                SharedPreferences.Editor editor=sharedPreferences.edit();
-                                isPremium=true;
-                                editor.putBoolean("isPremium",true);
-                                editor.apply();
+                                @Override
+                                public void onSubscriptionChange(boolean subscription) {
+                                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                                    if (subscription){
+                                        onTrial=true;
+                                        premiumMobile=true;
+                                        editor.putBoolean("cbPremium",true);
+                                    }else{
+                                        onTrial=false;
+                                        premiumMobile=false;
+                                        editor.putBoolean("cbPremium",false);
+                                    }
+                                    editor.apply();
+                                }
 
-                            }
+                                @Override
+                                public void onSubscribed() {
 
-                            @Override
-                            public void onUnSubscribed() {
-                                SharedPreferences.Editor editor=sharedPreferences.edit();
-                                isPremium=false;
-                                editor.putBoolean("isPremium",false);
-                                editor.apply();
-                            }
+                                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                                    onTrial=true;
+                                    premiumMobile=true;
+                                    editor.putBoolean("cbPremium",true);
+                                    editor.apply();
 
-                            @Override
-                            public void onPaymentPending() {
+                                }
 
-                            }
-                        });
+                                @Override
+                                public void onUnSubscribed() {
+                                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                                    onTrial=false;
+                                    premiumMobile=false;
+                                    editor.putBoolean("cbPremium",false);
+                                    editor.apply();
+                                }
+
+                                @Override
+                                public void onPaymentPending() {
+                                    onTrial=false;
+                                    premiumMobile=false;
+                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showPendingDialog();
+                                        }
+                                    });
+                                }
+                            });
+
+                        }
+                    }
+                });
+            }else{
+
+                supporter.initializeWithKey(accessKey, "WpIP1g4SB9utHkDX73foOQNjcVyG2EMJrFsm60CLwb5iqTRhKx", "tuDLR7oszgw2qAYGIpMQ", new CarrierBillingSupporter.OnInitializeCompleteListener() {
+                    @Override
+                    public void onInitialized() {
 
                     }
-                }
-            });
+
+                    @Override
+                    public void onSubscriptionChange(boolean subscription) {
+                        SharedPreferences.Editor editor=sharedPreferences.edit();
+                        if (subscription){
+                            onTrial=true;
+                            premiumMobile=true;
+                            editor.putBoolean("cbPremium",true);
+                        }else{
+                            onTrial=false;
+                            premiumMobile=false;
+                            editor.putBoolean("cbPremium",false);
+                        }
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onSubscribed() {
+
+                        SharedPreferences.Editor editor=sharedPreferences.edit();
+                        onTrial=true;
+                        premiumMobile=true;
+                        editor.putBoolean("cbPremium",true);
+                        editor.apply();
+
+                    }
+
+                    @Override
+                    public void onUnSubscribed() {
+                        SharedPreferences.Editor editor=sharedPreferences.edit();
+                        onTrial=false;
+                        premiumMobile=false;
+                        editor.putBoolean("cbPremium",false);
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onPaymentPending() {
+                        onTrial=false;
+                        premiumMobile=false;
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                showPendingDialog();
+                            }
+                        });
+                    }
+                });
+
+            }
+
         }
 
+    }
+
+    private void showPendingDialog() {
+        Dialog dialog=new Dialog(context);
+        dialog.setContentView(R.layout.pending_dialog);
+        dialog.setCancelable(true);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        Button hide=dialog.findViewById(R.id.hideBtn);
+        hide.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     private void connectBC(BillingClient billingClient){

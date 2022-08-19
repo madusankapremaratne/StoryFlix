@@ -30,27 +30,16 @@ import com.android.billingclient.api.ProductDetailsResponseListener;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
-import com.android.billingclient.api.SkuDetails;
-import com.android.billingclient.api.SkuDetailsParams;
-import com.android.billingclient.api.SkuDetailsResponseListener;
 import com.cyberyakku.carrierbillingsupporter.CarrierBillingSupporter;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.ImmutableList;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 public class BuyPremiumActivity extends AppCompatActivity {
 
     private BillingClient billingClient;
-    private Button purchaseGoogle,purchaseDialog,purchaseHutch;
-    private FirebaseFirestore firebaseFirestore;
+    private Button purchaseGoogle,purchaseDialog,purchaseMobitel;
     private SharedPreferences sharedPreferences;
     private Dialog progressDialog;
 
@@ -62,8 +51,7 @@ public class BuyPremiumActivity extends AppCompatActivity {
         sharedPreferences=getSharedPreferences("UserData",MODE_PRIVATE);
         purchaseGoogle=findViewById(R.id.purchaseGoogle);
         purchaseDialog=findViewById(R.id.purchaseDialog);
-        purchaseHutch=findViewById(R.id.purchaseHutch);
-        firebaseFirestore=FirebaseFirestore.getInstance();
+        purchaseMobitel=findViewById(R.id.purchaseMobitel);
 
         progressDialog=new Dialog(BuyPremiumActivity.this);
         progressDialog.setContentView(R.layout.authenticating_dialog);
@@ -105,23 +93,50 @@ public class BuyPremiumActivity extends AppCompatActivity {
         supporter.initialize("WpIP1g4SB9utHkDX73foOQNjcVyG2EMJrFsm60CLwb5iqTRhKx", "tuDLR7oszgw2qAYGIpMQ", new CarrierBillingSupporter.OnInitializeCompleteListener() {
             @Override
             public void onInitialized() {
-           /*     purchaseDialog.setOnClickListener(new View.OnClickListener() {
+                purchaseDialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        setEnable(false);
-                        supporter.subscribe();
+                        Dialog dialog=new Dialog(BuyPremiumActivity.this);
+                        dialog.setContentView(R.layout.agree_dialog);
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        dialog.setCancelable(true);
+
+                        Button agreeBtn=(Button)dialog.findViewById(R.id.agreeBtn);
+                        agreeBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                supporter.subscribe();
+                            }
+                        });
+
+                        dialog.show();
                     }
                 });
 
-                purchaseHutch.setOnClickListener(new View.OnClickListener() {
+                purchaseMobitel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        setEnable(false);
-                        supporter.subscribe();
+                        Dialog dialog=new Dialog(BuyPremiumActivity.this);
+                        dialog.setContentView(R.layout.agree_mobitel);
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        dialog.setCancelable(true);
 
+                        Button agreeBtn=(Button)dialog.findViewById(R.id.agreeBtn);
+                        agreeBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                dialog.dismiss();
+                                supporter.subscribe();
+                            }
+                        });
+
+                        dialog.show();
                     }
                 });
-*/
+
             }
 
             @Override
@@ -131,7 +146,7 @@ public class BuyPremiumActivity extends AppCompatActivity {
 
             @Override
             public void onSubscribed() {
-                UpdateDatabase(2,"");
+                UpdateDatabase("cbPremium");
             }
 
             @Override
@@ -140,7 +155,7 @@ public class BuyPremiumActivity extends AppCompatActivity {
 
             @Override
             public void onPaymentPending() {
-
+                Toast.makeText(BuyPremiumActivity.this, "Payment Pending!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -148,7 +163,6 @@ public class BuyPremiumActivity extends AppCompatActivity {
 
     private void setEnable(boolean b) {
         purchaseDialog.setEnabled(b);
-        purchaseHutch.setEnabled(b);
         purchaseGoogle.setEnabled(b);
     }
 
@@ -263,7 +277,7 @@ public class BuyPremiumActivity extends AppCompatActivity {
             @Override
             public void onAcknowledgePurchaseResponse(@NonNull BillingResult billingResult) {
                 if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
-                    UpdateDatabase(1,"");
+                    UpdateDatabase("isPremium");
                 }
             }
         });
@@ -274,25 +288,16 @@ public class BuyPremiumActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private void UpdateDatabase(int value,String mobileNumber){
+    private void UpdateDatabase(String type){
 
-        DocumentReference reference=firebaseFirestore.collection("Users").document(mainActivity.userID);
-        HashMap<String,Object> data=new HashMap<>();
-        data.put("PremiumMethod",value);
-        data.put("MobileNumber",mobileNumber);
-        reference.update(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                SharedPreferences.Editor editor=sharedPreferences.edit();
-                editor.putBoolean("isPremium",true);
-                editor.apply();
-                Toast.makeText(BuyPremiumActivity.this, "You are a premium user now", Toast.LENGTH_SHORT).show();
-                progressDialog.dismiss();
-                mainActivity.finish();
-                startActivity(new Intent(BuyPremiumActivity.this,SplashActivity.class));
-                finish();
-            }
-        });
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putBoolean(type,true);
+        editor.apply();
+        Toast.makeText(BuyPremiumActivity.this, "You are a premium user now", Toast.LENGTH_SHORT).show();
+        progressDialog.dismiss();
+        mainActivity.finish();
+        startActivity(new Intent(BuyPremiumActivity.this,SplashActivity.class));
+        finish();
 
     }
 

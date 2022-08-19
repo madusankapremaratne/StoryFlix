@@ -163,7 +163,12 @@ public class HomeThread extends Thread{
 
                     arrayList.get(3).setArrayList(array);
                     arrayList.get(3).setTimeRefreshed(arrayList.get(3).getTimeRefreshed()+1);
-                    mainAdapter.notifyItemChanged(3);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainAdapter.notifyItemChanged(3);
+                        }
+                    });
 
                 }
             }
@@ -201,7 +206,12 @@ public class HomeThread extends Thread{
 
                     arrayList.get(2).setArrayList(array);
                     arrayList.get(2).setTimeRefreshed(arrayList.get(2).getTimeRefreshed()+1);
-                    mainAdapter.notifyItemChanged(2);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainAdapter.notifyItemChanged(2);
+                        }
+                    });
 
                 }
             }
@@ -239,7 +249,12 @@ public class HomeThread extends Thread{
 
                     arrayList.get(1).setArrayList(array);
                     arrayList.get(1).setTimeRefreshed(arrayList.get(1).getTimeRefreshed()+1);
-                    mainAdapter.notifyItemChanged(1);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainAdapter.notifyItemChanged(1);
+                        }
+                    });
 
                 }
             }
@@ -277,7 +292,12 @@ public class HomeThread extends Thread{
 
                     arrayList.get(0).setArrayList(array);
                     arrayList.get(0).setTimeRefreshed(arrayList.get(0).getTimeRefreshed()+1);
-                    mainAdapter.notifyItemChanged(0);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mainAdapter.notifyItemChanged(0);
+                        }
+                    });
 
                 }
             }

@@ -65,15 +65,12 @@ public class ViewAlbumThread extends Thread{
                     epiArray.clear();
 
                     for (QueryDocumentSnapshot data:value){
-
                         EpiModel model=new EpiModel(data.getDouble("EpiID"),
                                 data.getDouble("AlbumID"),
                                 data.getString("Content"),
                                 data.getDouble("CreatedDate"),
                                 data.getString("Title"));
-
                         epiArray.add(model);
-
                     }
 
                     if (epiArray.size()>0){
@@ -86,11 +83,14 @@ public class ViewAlbumThread extends Thread{
                                 }
                             });
                         }else{
-                            adapter.notifyDataSetChanged();
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
                         }
-
                     }
-
                 }
             }
         });
@@ -103,7 +103,7 @@ public class ViewAlbumThread extends Thread{
 
             double co=dbHandler.getReadCount(albumID);
 
-            if (activity.model.getEpiCount()!=0 && (co == activity.model.getEpiCount())){
+            if (activity.model.getEpiCount()!=0 && (co == activity.model.getEpiCount() && epiArray.size()==activity.model.getEpiCount()) ){
                 activity.model.setViewCount(activity.model.getViewCount()+1);
                 dbHandler.setNewCounted(albumID);
 
@@ -119,19 +119,15 @@ public class ViewAlbumThread extends Thread{
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful() && task.getResult()!=null && task.getResult().exists()){
-
                             if (task.getResult().getDouble("ViewCount")!=null) {
                                 double count = task.getResult().getDouble("ViewCount");
                                 documentReference.update("ViewCount", count + 1);
                             }
-
                         }
                     }
                 });
-
             }
         }
-
     }
 
     private String convertViewCount(double viewCount){
@@ -212,18 +208,22 @@ public class ViewAlbumThread extends Thread{
 
                         for (QueryDocumentSnapshot data:value){
 
-                            activity.commentsArray.add(new AlbumCommentModel(
-                                    data.getString("ID"),
-                                    data.getString("UserID"),
-                                    data.getString("Comment"),
-                                    data.getString("Reply"),
-                                    data.getString("UserName"),
-                                    data.getString("ProfileURL"),
-                                    data.getString("Date"),
-                                    data.getString("ReplyDate")));
+                            for (int i=0;i<activity.commentsArray.size();i++){
 
+                                if (!data.getString("ID").equals(activity.commentsArray.get(i).getID())){
+                                    activity.commentsArray.add(new AlbumCommentModel(
+                                            data.getString("ID"),
+                                            data.getString("UserID"),
+                                            data.getString("Comment"),
+                                            data.getString("Reply"),
+                                            data.getString("UserName"),
+                                            data.getString("ProfileURL"),
+                                            data.getString("Date"),
+                                            data.getString("ReplyDate")));
+                                    break;
+                                }
+                            }
                             activity.documentSnapshot=data;
-
                         }
 
                         activity.isLoading=false;
@@ -235,9 +235,6 @@ public class ViewAlbumThread extends Thread{
                                 activity.swipeRefreshLayout.setRefreshing(false);
                             }
                         });
-
-
-
                     }else{
                         //TODO Values are null
                         System.out.println("Values are null query");
