@@ -46,7 +46,6 @@ public class HomeThread extends Thread{
     public FirebaseFirestore firebaseFirestore;
     public ArrayList<MainModel> arrayList;
     public MainAdapter mainAdapter;
-    private int timeRefreshed=0;
 
     public HomeThread(Context context,HomeFragment homeFragment){
         this.context=context;

@@ -13,8 +13,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkRequest;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,26 +36,37 @@ import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.QueryPurchasesParams;
 import com.cyberyakku.carrierbillingsupporter.CarrierBillingSupporter;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     public TabLayout tabLayout;
     private Context context;
+
+    //Sorry for not using JAVA INTERFACES
+    //This boolean values are used to notify data changes of different activities and fragments
     public static boolean isConnected,favoriteChanged=false,profileDataChanged=false,isPremium=false,onTrial=false,premiumMobile=false;
+
+
     public static MainActivity mainActivity;
     public TextView noInternetLayout;
     private int themeColor;
-    private boolean exist=false;
+    private boolean exist=false; //For double tap to exit from the app
     public SharedPreferences sharedPreferences;
     public String userID="";
+    CarrierBillingSupporter supporter; //SIM Payment Library by cyber yakku
+
+    //Java Interface
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         mainActivity=this;
         noInternetLayout=findViewById(R.id.noInternetLayout);
         isConnected=isNetworkConnected();
+        supporter=new CarrierBillingSupporter(MainActivity.this);
         checkInternetConnection();
         themeColor=ContextCompat.getColor(context,R.color.selectedTabIconColor);
         sharedPreferences=getSharedPreferences("UserData",MODE_PRIVATE);
@@ -104,139 +114,58 @@ public class MainActivity extends AppCompatActivity {
 
         if (FirebaseAuth.getInstance().getCurrentUser()!=null){
 
-            BillingClient billingClient;
-            billingClient = BillingClient.newBuilder(MainActivity.this).enablePendingPurchases().setListener((billingResult, list) -> {
-            }).build();
+            long expireDate=sharedPreferences.getLong("ExpireDate",0);
 
-            connectBC(billingClient);
+            if (expireDate > 0){
+                //Checking : If users payed trough direct bank deposit
+                //If payed dat is > 0, then add on 30 days and get the payment expire date
 
-            //CarrierBillingSupporter
-            String accessKey=sharedPreferences.getString("accessKey","");
-            CarrierBillingSupporter supporter=new CarrierBillingSupporter(MainActivity.this);
-            if (accessKey.isEmpty()){
-                supporter.getSubscriptionAccessKey(new CarrierBillingSupporter.OnSubscriptionAccessKeyRequestListener() {
-                    @Override
-                    public void onSubscriptionKey(String key) {
-                        if (key!=null){
+                Calendar calendar=Calendar.getInstance();
 
-                            FirebaseFirestore.getInstance().collection("Users").document(userID).update("accessKey",key);
+                if (calendar.getTimeInMillis()<= expireDate){
+                    isPremium=true;
+                    Log.d("BankPayment","Premium True");
+                }
 
-                            SharedPreferences.Editor editor=sharedPreferences.edit();
-                            editor.putString("accessKey",key);
-                            editor.apply();
-
-                            supporter.initializeWithKey(accessKey, "WpIP1g4SB9utHkDX73foOQNjcVyG2EMJrFsm60CLwb5iqTRhKx", "tuDLR7oszgw2qAYGIpMQ", new CarrierBillingSupporter.OnInitializeCompleteListener() {
-                                @Override
-                                public void onInitialized() {
-
-                                }
-
-                                @Override
-                                public void onSubscriptionChange(boolean subscription) {
-                                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                                    if (subscription){
-                                        onTrial=true;
-                                        premiumMobile=true;
-                                        editor.putBoolean("cbPremium",true);
-                                    }else{
-                                        onTrial=false;
-                                        premiumMobile=false;
-                                        editor.putBoolean("cbPremium",false);
-                                    }
-                                    editor.apply();
-                                }
-
-                                @Override
-                                public void onSubscribed() {
-
-                                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                                    onTrial=true;
-                                    premiumMobile=true;
-                                    editor.putBoolean("cbPremium",true);
-                                    editor.apply();
-
-                                }
-
-                                @Override
-                                public void onUnSubscribed() {
-                                    SharedPreferences.Editor editor=sharedPreferences.edit();
-                                    onTrial=false;
-                                    premiumMobile=false;
-                                    editor.putBoolean("cbPremium",false);
-                                    editor.apply();
-                                }
-
-                                @Override
-                                public void onPaymentPending() {
-                                    onTrial=false;
-                                    premiumMobile=false;
-                                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            showPendingDialog();
-                                        }
-                                    });
-                                }
-                            });
-
-                        }
-                    }
-                });
             }else{
 
-                supporter.initializeWithKey(accessKey, "WpIP1g4SB9utHkDX73foOQNjcVyG2EMJrFsm60CLwb5iqTRhKx", "tuDLR7oszgw2qAYGIpMQ", new CarrierBillingSupporter.OnInitializeCompleteListener() {
-                    @Override
-                    public void onInitialized() {
+                BillingClient billingClient;
+                billingClient = BillingClient.newBuilder(MainActivity.this).enablePendingPurchases().setListener((billingResult, list) -> {
+                }).build();
 
-                    }
+                connectBC(billingClient);
 
-                    @Override
-                    public void onSubscriptionChange(boolean subscription) {
-                        SharedPreferences.Editor editor=sharedPreferences.edit();
-                        if (subscription){
-                            onTrial=true;
-                            premiumMobile=true;
-                            editor.putBoolean("cbPremium",true);
-                        }else{
-                            onTrial=false;
-                            premiumMobile=false;
-                            editor.putBoolean("cbPremium",false);
-                        }
-                        editor.apply();
-                    }
+                //CarrierBillingSupporter
+                String accessKey=sharedPreferences.getString("accessKey","");
+                Log.d("MyTest",accessKey);
+                supporter=new CarrierBillingSupporter(MainActivity.this);
+                if (!accessKey.isEmpty()){
+                    initializeCarrierBilling(accessKey);
+                }else{
 
-                    @Override
-                    public void onSubscribed() {
-
-                        SharedPreferences.Editor editor=sharedPreferences.edit();
-                        onTrial=true;
-                        premiumMobile=true;
-                        editor.putBoolean("cbPremium",true);
-                        editor.apply();
-
-                    }
-
-                    @Override
-                    public void onUnSubscribed() {
+                    //Check library is ready data
+                    if(supporter.isSubscribed()){
+                        supporter.getSubscriptionAccessKey(new CarrierBillingSupporter.OnSubscriptionAccessKeyRequestListener() {
+                            @Override
+                            public void onSubscriptionKey(String key) {
+                                if(key != null){
+                                    Log.d("MyTest","Main Acitivity - 2");
+                                    updateKeyInServer(key);
+                                }else{
+                                    Log.d("MyTest","Key Null");
+                                }
+                            }
+                        });
+                    }else{
                         SharedPreferences.Editor editor=sharedPreferences.edit();
                         onTrial=false;
                         premiumMobile=false;
                         editor.putBoolean("cbPremium",false);
+                        editor.putString("accessKey","");
                         editor.apply();
                     }
 
-                    @Override
-                    public void onPaymentPending() {
-                        onTrial=false;
-                        premiumMobile=false;
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                showPendingDialog();
-                            }
-                        });
-                    }
-                });
+                }
 
             }
 
@@ -244,6 +173,126 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    void initializeCarrierBilling(String key){
+
+        supporter.initializeWithKey(key, "WpIP1g4SB9utHkDX73foOQNjcVyG2EMJrFsm60CLwb5iqTRhKx", "tuDLR7oszgw2qAYGIpMQ", new CarrierBillingSupporter.OnInitializeCompleteListener() {
+            @Override
+            public void onInitialized() {
+                Log.d("MyTest","Initi");
+            }
+
+            @Override
+            public void onSubscriptionChange(boolean subscription) {
+                Log.d("MyTest","Sub change - "+subscription);
+
+                SharedPreferences.Editor editor=sharedPreferences.edit();
+                if (subscription){
+                    onTrial=true;
+                    premiumMobile=true;
+                    editor.putBoolean("cbPremium",true);
+                }else{
+                    onTrial=false;
+                    premiumMobile=false;
+                    editor.putBoolean("cbPremium",false);
+                }
+                editor.apply();
+            }
+
+            @Override
+            public void onSubscribed() {
+                Log.d("MyTest","Subscribed");
+
+                //Check key
+                String accessKey = sharedPreferences.getString("accessKey",null);
+                if(accessKey != null){
+                    supporter.getSubscriptionAccessKey(new CarrierBillingSupporter.OnSubscriptionAccessKeyRequestListener() {
+                        @Override
+                        public void onSubscriptionKey(String key) {
+                            if(!key.equals(accessKey)){
+                                updateKeyInServer(key);
+                            }
+                        }
+                    });
+                }
+
+                SharedPreferences.Editor editor=sharedPreferences.edit();
+                onTrial=true;
+                premiumMobile=true;
+                editor.putBoolean("cbPremium",true);
+                editor.apply();
+
+            }
+
+            @Override
+            public void onUnSubscribed() {
+                Log.d("MyTest","Un Subscribed");
+
+                SharedPreferences.Editor editor=sharedPreferences.edit();
+                onTrial=false;
+                premiumMobile=false;
+                editor.putBoolean("cbPremium",false);
+
+                editor.putString("accessKey","");
+
+                editor.apply();
+            }
+
+            @Override
+            public void onPaymentPending() {
+                Log.d("MyTest","Payment Peniding");
+
+                //Check key
+                String accessKey = sharedPreferences.getString("accessKey",null);
+                if(accessKey != null){
+                    supporter.getSubscriptionAccessKey(new CarrierBillingSupporter.OnSubscriptionAccessKeyRequestListener() {
+                        @Override
+                        public void onSubscriptionKey(String key) {
+                            if(!key.equals(accessKey)){
+                                updateKeyInServer(key);
+                            }
+                        }
+                    });
+                }
+
+                onTrial=false;
+                premiumMobile=false;
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        showPendingDialog();
+                    }
+                });
+            }
+        });
+
+    }
+
+    void updateKeyInServer(String key){
+
+        //Key Updating Progress
+        Log.d("MyTest","Subscription key updated on server");
+
+        FirebaseFirestore.getInstance().collection("Users").document(userID).update("accessKey",key).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                SharedPreferences.Editor editor=sharedPreferences.edit();
+                editor.putString("accessKey",key);
+                editor.apply();
+                initializeCarrierBilling(key);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                SharedPreferences.Editor editor=sharedPreferences.edit();
+                editor.putString("accessKey",key);
+                editor.apply();
+                initializeCarrierBilling(key);
+            }
+        });
+
+    }
+
+    //SIM payment pending dialog
     private void showPendingDialog() {
         Dialog dialog=new Dialog(context);
         dialog.setContentView(R.layout.pending_dialog);
@@ -444,13 +493,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            connectivityManager.registerDefaultNetworkCallback(networkCallback);
-        } else {
-            NetworkRequest request = new NetworkRequest.Builder()
-                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET).build();
-            connectivityManager.registerNetworkCallback(request, networkCallback);
-        }
+        connectivityManager.registerDefaultNetworkCallback(networkCallback);
 
     }
 

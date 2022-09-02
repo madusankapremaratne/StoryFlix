@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="20dp"
+    android:layout_marginEnd="20dp"
+    app:cardBackgroundColor="@color/contentBackgroundColor"
+    app:cardCornerRadius="20dp"
+    android:layout_gravity="center"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/mainTextColor"
+            android:text="යෙදවුම සඳහා අය කරන මුදල රු200/- ක්‌ වුවත් රජයේ බදු සඳහා රු 70/-ක පමණ මුදලක් වැය වන නිසා ඒ සම්පුර්ණ මුදල ඔබගේ දුරකථන ගිණුමෙහි ඇති බව subscribe කිරීමට පෙර තහවුරු කරගන්න."/>
+
+        <Button
+            android:id="@+id/purchaseBtn"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Purchase"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:backgroundTint="#00C649"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -55,11 +55,12 @@
         <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/item_main.xml" value="0.25" />
         <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/pending_dialog.xml" value="0.22" />
         <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/preview_dialog.xml" value="0.17" />
+        <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/tax_dialog.xml" value="0.25" />
         <entry key="..\:/Users/ChirathBiz/AndroidStudioProjects/StoryFlix/app/src/main/res/layout/unsub_dialog.xml" value="0.25" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

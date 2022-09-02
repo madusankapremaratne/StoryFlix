@@ -25,7 +25,7 @@ public class HomeFragment extends Fragment {
     public RecyclerView sliderRecyclerView,mainRecyclerView;
     private Context context;
     private RelativeLayout searchBtn;
-    Animation clickAnim;
+    Animation clickAnim; //Click Animation
     public LinearLayoutManager layoutManager;
 
     @Override
@@ -34,13 +34,15 @@ public class HomeFragment extends Fragment {
         View view= inflater.inflate(R.layout.fragment_home, container, false);
 
         context=getContext();
+        clickAnim=AnimationUtils.loadAnimation(context,R.anim.click_animation);
+
         mainRecyclerView=view.findViewById(R.id.recyclerView);
         mainRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-        clickAnim=AnimationUtils.loadAnimation(context,R.anim.click_animation);
 
         sliderRecyclerView=view.findViewById(R.id.sliderRecyclerView);
         layoutManager=new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false);
         sliderRecyclerView.setLayoutManager(layoutManager);
+
         HomeThread homeThread=new HomeThread(context,HomeFragment.this);
         homeThread.start();
 

@@ -31,6 +31,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,8 +68,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,9 +106,7 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_settings, container, false);
-
         SwitchMaterial switchMaterial=view.findViewById(R.id.dSwitch);
-
         switchMaterial.setChecked(mainActivity.sharedPreferences.getInt("DarkMode", 0) == 1);
 
         context=getContext();
@@ -213,6 +214,14 @@ public class SettingsFragment extends Fragment {
                         userName.setText(name);
                         if (imageURL!=null && !imageURL.isEmpty() && !imageURL.equals(mainActivity.sharedPreferences.getString("imageURL",""))){
                             Picasso.with(context).load(imageURL).into(profilePicture);
+                        }
+
+                        //Carrier Billing key update
+                        String accKey = documentSnapshot.getString("accessKey");
+                        if(accKey != null){
+                            if(!accKey.equals("")){
+                                updateCarrierBilling(accKey);
+                            }
                         }
 
                         SharedPreferences.Editor editor=mainActivity.sharedPreferences.edit();
@@ -344,6 +353,10 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        if (mainActivity.sharedPreferences.getBoolean("isPremium",false)||mainActivity.sharedPreferences.getBoolean("cbPremium",false)){
+           premiumBtn.setVisibility(View.GONE);
+        }
+
         LinearLayout unsubBtn=view.findViewById(R.id.unsubscribe);
         RelativeLayout unsubDivider=view.findViewById(R.id.unSubDiv);
 
@@ -402,6 +415,8 @@ public class SettingsFragment extends Fragment {
 
     }
 
+
+    //Only refreshing user data
     private void refreshData(String userID) {
 
         DocumentReference documentReference=firebaseFirestore.collection("Users").document(userID);
@@ -422,6 +437,11 @@ public class SettingsFragment extends Fragment {
                         accKey=documentSnapshot.getString("accessKey");
                     }
 
+                    long bankPaymentDate=0;
+                    if (documentSnapshot.getLong("BankPaymentDate")!=null){
+                        bankPaymentDate=documentSnapshot.getLong("BankPaymentDate");
+                    }
+
                     userName.setText(name);
                     if (imageURL!=null && !imageURL.isEmpty() && !imageURL.equals(mainActivity.sharedPreferences.getString("imageURL",""))){
                         Picasso.with(context).load(imageURL).into(profilePicture);
@@ -437,14 +457,32 @@ public class SettingsFragment extends Fragment {
                     editor.putInt("premiumMethod",premiumMethod);
                     editor.putString("mobileNumber",mobileNumber);
                     editor.putString("accessKey",accKey);
+
+                    if (bankPaymentDate>0){
+                        editor.putLong("ExpireDate",getExpireDate(bankPaymentDate));
+                    }
                     editor.apply();
 
                     Toast.makeText(context, "Data Refreshed!", Toast.LENGTH_SHORT).show();
+                    if (!MainActivity.isPremium || !onTrial){
+                        UpdateDatabase("cbPremium");
+                    }
+
+                    Log.d("BankPayment",String.valueOf(bankPaymentDate));
 
                 }
             }
         });
 
+    }
+
+
+    //Direct bank transfer expire date
+    private long getExpireDate(long bankPaymentDate) {
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTimeInMillis(bankPaymentDate);
+        calendar.add(Calendar.DAY_OF_YEAR,+30);
+        return calendar.getTimeInMillis();
     }
 
     private void unsubscribe(Dialog dialog) {
@@ -509,7 +547,6 @@ public class SettingsFragment extends Fragment {
             e.printStackTrace();
             loginFailed();
         }
-
     }
 
     private void FirebaseGoogleAuth(GoogleSignInAccount acc) {
@@ -548,8 +585,15 @@ public class SettingsFragment extends Fragment {
                                     boolean isPremium=documentSnapshot.getBoolean("IsPremium");
                                     String mobileNumber=documentSnapshot.getString("MobileNumber");
                                     String accKey="";
+
                                     if (documentSnapshot.getString("accessKey")!=null){
                                         accKey=documentSnapshot.getString("accessKey");
+
+                                        if(!accKey.isEmpty()){
+                                            updateCarrierBilling(accKey);
+                                            UpdateDatabase("cbPremium");
+                                        }
+
                                     }
 
                                     userName.setText(name);
@@ -591,7 +635,6 @@ public class SettingsFragment extends Fragment {
                                         }
                                     });
 
-
                                 }else{
 
                                     DocumentReference documentReference=firebaseFirestore.collection("Users").document(userID);
@@ -618,12 +661,9 @@ public class SettingsFragment extends Fragment {
                                     documentReference.set(userData).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-
                                             if (task.isSuccessful()){
-
                                                 authenticatingDialog.dismiss();
                                                 loginBtn.setText("Log Out");
-
                                                 userName.setText(personName);
                                                 if (!imageURL.isEmpty()){
                                                     Picasso.with(context).load(imageURL).into(profilePicture);
@@ -650,6 +690,32 @@ public class SettingsFragment extends Fragment {
 
     }
 
+    void updateCarrierBilling(String key){
+        if(key != null){
+            SharedPreferences sharedPreferences=context.getSharedPreferences("UserData",Context.MODE_PRIVATE);
+            String accessKey = sharedPreferences.getString("accessKey","");
+            if(!key.equals(accessKey)){
+
+                if (!key.isEmpty()){
+                    Log.d("MyTest","Settings Fragment - Update Carrier Billing");
+                    SharedPreferences.Editor editor=sharedPreferences.edit();
+                    editor.putString("accessKey",key);
+                    editor.putBoolean("cbPremium",true);
+                    editor.apply();
+                }
+            }
+        }
+    }
+
+    private void UpdateDatabase(String type){
+        SharedPreferences.Editor editor=context.getSharedPreferences("UserData",Context.MODE_PRIVATE).edit();
+        editor.putBoolean(type,true);
+        editor.apply();
+        mainActivity.finish();
+        startActivity(new Intent(requireContext(),SplashActivity.class));
+        requireActivity().finish();
+    }
+
     private int getDateCode() {
         SimpleDateFormat dateFormat=new SimpleDateFormat("yyyyMMdd");
         return Integer.parseInt(String.valueOf(dateFormat.format(Calendar.getInstance().getTime())));
@@ -661,6 +727,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void logOut(){
+
         mainActivity.userID="";
         firebaseAuth.signOut();
         emailTV.setVisibility(View.GONE);
@@ -674,7 +741,13 @@ public class SettingsFragment extends Fragment {
         editor.putString("email","");
         editor.putString("userName","");
         editor.putString("imageURL","");
+        editor.putString("accessKey","");
+        editor.putBoolean("cbPremium",false);
+        editor.putBoolean("isPremium",false);
         editor.apply();
+
+        startActivity(new Intent(context,SplashActivity.class));
+        mainActivity.finish();
 
     }
 

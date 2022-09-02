@@ -117,14 +117,14 @@
 
                 <TextView
                     android:id="@+id/editBtn"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="5dp"
                     android:gravity="center"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
                     android:text="Login"
                     android:textColor="@color/color_primary"
                     android:textSize="15sp"
@@ -214,10 +214,10 @@
                 android:background="@color/dividerColor" />
 
             <LinearLayout
-                android:layout_marginTop="25dp"
                 android:id="@+id/contactBtn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginTop="25dp"
                 android:background="@drawable/ripple"
                 android:clickable="true"
                 android:gravity="center_vertical"
@@ -245,21 +245,21 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:visibility="gone"
                 android:id="@+id/refreshDivider"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/dividerColor" />
+                android:background="@color/dividerColor"
+                android:visibility="gone" />
 
             <LinearLayout
-                android:visibility="gone"
                 android:id="@+id/refreshBtn"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/ripple"
                 android:clickable="true"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="25dp"
@@ -388,21 +388,21 @@
             </LinearLayout>
 
             <RelativeLayout
-                android:visibility="gone"
                 android:id="@+id/unSubDiv"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="@color/dividerColor" />
+                android:background="@color/dividerColor"
+                android:visibility="gone" />
 
             <LinearLayout
-                android:visibility="gone"
                 android:id="@+id/unsubscribe"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:background="@drawable/ripple"
                 android:clickable="true"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="25dp"
@@ -468,10 +468,10 @@
                 android:background="@color/dividerColor" />
 
             <LinearLayout
-                android:layout_marginBottom="20dp"
                 android:id="@+id/privacyPolicy"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/ripple"
                 android:clickable="true"
                 android:gravity="center_vertical"

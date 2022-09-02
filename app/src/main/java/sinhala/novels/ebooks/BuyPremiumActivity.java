@@ -31,8 +31,12 @@ import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.QueryProductDetailsParams;
 import com.cyberyakku.carrierbillingsupporter.CarrierBillingSupporter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.collect.ImmutableList;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -42,11 +46,19 @@ public class BuyPremiumActivity extends AppCompatActivity {
     private Button purchaseGoogle,purchaseDialog,purchaseMobitel;
     private SharedPreferences sharedPreferences;
     private Dialog progressDialog;
+    public String userID="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buy_premium);
+
+        if (FirebaseAuth.getInstance().getCurrentUser()!=null){
+            userID=FirebaseAuth.getInstance().getCurrentUser().getUid();
+        }else{
+            //Finish activity invalid user
+            finish();
+        }
 
         sharedPreferences=getSharedPreferences("UserData",MODE_PRIVATE);
         purchaseGoogle=findViewById(R.id.purchaseGoogle);
@@ -107,7 +119,7 @@ public class BuyPremiumActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 dialog.dismiss();
-                                supporter.subscribe();
+                                showTaxDialog(supporter);
                             }
                         });
 
@@ -129,7 +141,7 @@ public class BuyPremiumActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 dialog.dismiss();
-                                supporter.subscribe();
+                                showTaxDialog(supporter);
                             }
                         });
 
@@ -146,7 +158,7 @@ public class BuyPremiumActivity extends AppCompatActivity {
 
             @Override
             public void onSubscribed() {
-                UpdateDatabase("cbPremium");
+                updateKeyInServer(supporter);
             }
 
             @Override
@@ -155,7 +167,7 @@ public class BuyPremiumActivity extends AppCompatActivity {
 
             @Override
             public void onPaymentPending() {
-                Toast.makeText(BuyPremiumActivity.this, "Payment Pending!", Toast.LENGTH_SHORT).show();
+                updateKeyInServer(supporter);
             }
         });
 
@@ -288,6 +300,45 @@ public class BuyPremiumActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    void updateKeyInServer(CarrierBillingSupporter supporter){
+
+        progressDialog.show();
+
+        //Request key
+        supporter.getSubscriptionAccessKey(new CarrierBillingSupporter.OnSubscriptionAccessKeyRequestListener() {
+            @Override
+            public void onSubscriptionKey(String key) {
+                //Update key in your server
+                if(key != null){
+
+                    FirebaseFirestore.getInstance().collection("Users").document(userID).update("accessKey",key).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            progressDialog.dismiss();
+                            SharedPreferences.Editor editor=sharedPreferences.edit();
+                            editor.putString("accessKey",key);
+                            editor.apply();
+                            UpdateDatabase("cbPremium");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            SharedPreferences.Editor editor=sharedPreferences.edit();
+                            editor.putString("accessKey",key);
+                            editor.apply();
+                            UpdateDatabase("cbPremium");
+                        }
+                    });
+
+                }else{
+                    Toast.makeText(BuyPremiumActivity.this, "Key Is Null! Contact Customer Support Immediately :)", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
     private void UpdateDatabase(String type){
 
         SharedPreferences.Editor editor=sharedPreferences.edit();
@@ -299,6 +350,25 @@ public class BuyPremiumActivity extends AppCompatActivity {
         startActivity(new Intent(BuyPremiumActivity.this,SplashActivity.class));
         finish();
 
+    }
+
+    private void showTaxDialog(CarrierBillingSupporter supporter){
+        Dialog dialog=new Dialog(BuyPremiumActivity.this);
+        dialog.setContentView(R.layout.tax_dialog);
+        dialog.setCancelable(true);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        Button purchaseBtn=dialog.findViewById(R.id.purchaseBtn);
+        purchaseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+                supporter.subscribe();
+            }
+        });
+
+        dialog.show();
     }
 
 }
